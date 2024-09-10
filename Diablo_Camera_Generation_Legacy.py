@@ -8,6 +8,45 @@ bl_info = {"name": "Diablo Reference Generation",
 
 
 import bpy
+import os
+import urllib.request
+
+def download_latest_version(url, file_path):
+    try:
+        response = urllib.request.urlopen(url)
+        data = response.read()
+        with open(file_path, 'wb') as file:
+            file.write(data)
+        return True
+    except Exception as e:
+        print(f"Failed to download the latest version: {e}")
+        return False
+    
+def replace_addon_script():
+    script_path = os.path.realpath(__file__)
+    
+    # Define the URL of the latest version of your add-on script
+    latest_version_url = "https://raw.githubusercontent.com/Smileyfejs-Git/Reference-Generator/main/Diablo_Camera_Generation_Legacy.py"
+    
+    # Download the latest version
+    if download_latest_version(latest_version_url, script_path):
+        # Reload the add-on
+        bpy.ops.script.reload()
+        print("Add-on updated and reloaded successfully.")
+    else:
+        print("Failed to update the add-on.")
+        
+# Update Operator
+class OBJECT_OT_UpdateAddon(bpy.types.Operator):
+    bl_idname = "object.update_addon"
+    bl_label = "Update Add-on"
+    bl_description = "Download and update to the latest version of the add-on"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        replace_addon_script()
+        return {'FINISHED'}
+    
 
 def add_diablo_ref(shouldPlGenerate, shouldGrGenerate):
    
@@ -75,16 +114,25 @@ class VIEW3D_PT_Generate_Diablo_Reference(bpy.types.Panel):
     
     def draw(self, context):
         """Define the layout of the panel"""
+        layout = self.layout
+        
         row = self.layout.row()
         row.operator("mesh.add_diablo_ref", text="Add Diablo Reference")
+        
+         # Update Add-on
+        self.layout.separator()
+        row = layout.row()
+        row.operator("object.update_addon", text="Update Add-on")
         
 # Register the panel with Blender
 def register():
     bpy.utils.register_class(VIEW3D_PT_Generate_Diablo_Reference)
     bpy.utils.register_class(MESH_OT_add_diablo_ref)
+    bpy.utils.register_class(OBJECT_OT_UpdateAddon)
     
 def unregister():
-    bpy.utils.register_class(MESH_OT_add_diablo_ref)
+    bpy.utils.unregister_class(OBJECT_OT_UpdateAddon)
+    bpy.utils.unregister_class(MESH_OT_add_diablo_ref)
     bpy.utils.unregister_class(VIEW3D_PT_Generate_Diablo_Reference)
     
 if __name__ == "__main__":
