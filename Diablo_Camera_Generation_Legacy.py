@@ -120,7 +120,7 @@ weapon_prefix = "WP_" # wp-bool property
 gear_prefix = "GE_" # ge-bool property
 
 # Define suffix for all categories
-suffix = "_24G2"
+suffix = "_23G2"
 
 
 
