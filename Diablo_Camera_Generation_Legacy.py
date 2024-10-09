@@ -122,14 +122,18 @@ gear_prefix = "GE_" # ge-bool property
 # Define suffix for all categories
 suffix = "_23G2"
 
-
+replace_char = "."
 
 def add_prefix_and_suffix(w, g, ph, p, s, pl, npc, wp, ge):
 
     # Loop through the selected objects
     for obj in bpy.context.selected_objects:
+
+        obj.name = obj.name.replace(".", "_")
+
         obj.name = obj.name + suffix
 
+        # add prefix depending on which option is chosen
         if w:
             obj.name = environment_prefix + wall_prefix + obj.name
 
